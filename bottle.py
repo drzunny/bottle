@@ -641,7 +641,8 @@ class Bottle(object):
             functools.partial(self.trigger_hook, 'config'))
 
         self.config.update({
-            "catchall": True
+            "catchall": True,
+            "json.enable": True
         })
 
         if kwargs.get('catchall') is False:
@@ -653,7 +654,7 @@ class Bottle(object):
             depr(0, 13, "Bottle(autojson) keyword argument.",
                  "The 'autojson' setting is now part of the app "
                  "configuration. Fix: `app.config['json.enable'] = False`")
-            self.config['json.disable'] = True
+            self.config['json.enable'] = False
 
         self._mounts = []
 
@@ -666,8 +667,10 @@ class Bottle(object):
 
         # Core plugins
         self.plugins = []  # List of installed plugins.
-        self.install(JSONPlugin())
         self.install(TemplatePlugin())
+
+        if self.config['json.enable']:
+            self.install(JSONPlugin())
 
     #: If true, most exceptions are caught and returned as :exc:`HTTPError`
     catchall = DictProperty('config', 'catchall')
